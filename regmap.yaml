@@ -1,0 +1,22 @@
+ip: mbox
+contract: { aw: 12, dw: 32 }
+base: 0x10009000
+size: 0x1000
+params: [harts, locks]
+regs:
+  - name: doorbell
+    offset: 0x000
+    desc: ring a doorbell, one per hart
+    array: { count: harts, stride: 4 }
+    fields: [ { name: val, bits: "0:0", sw: w, hw: r, swmod: true } ]
+  - name: dstat
+    offset: 0x100
+    desc: doorbell pending, write one to clear
+    fields:
+      - { name: val, width: 8, sw: rw, onwrite: woclr, hw: r, hwset: true, stickybit: true, reset: 0 }
+  - name: lock
+    offset: 0x200
+    desc: hardware spinlock, read acquires
+    feature: spinlock
+    array: { count: locks, stride: 4 }
+    fields: [ { name: val, bits: "0:0", sw: rw, hw: rw, volatile: true, swacc: true } ]
