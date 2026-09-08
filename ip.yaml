@@ -41,6 +41,13 @@ features:
   spinlock:
     type: bool
     default: true
+    area:
+      points:
+        '1': 0.0
+        '2': 0.0
+        '4': 0.0
+        '8': 0.0
+      per: harts
 emit:
 - kind: bsv
   package: Mbox
@@ -53,3 +60,58 @@ emit:
 deps:
   hwcore: ^0.1
   amba: ^0.1
+area:
+  base:
+    points:
+      '1': 650.16
+      '2': 611.52
+      '4': 710.92
+      '8': 742.28
+    per: harts
+  margin: 0.0308
+  model: points-additive
+  error:
+    bound: 0.052
+    sign: over
+    note: parameter curves stored as measured points, features added on top, then
+      lifted by 0.0308 so that no untested combination predicts under; the worst came
+      in 2.58 percent under before the lift
+  measured:
+  - at:
+      harts: 1
+      spinlock: false
+    um2: 650.16
+  - at:
+      harts: 2
+      spinlock: false
+    um2: 611.52
+  - at:
+      harts: 4
+      spinlock: false
+    um2: 710.92
+  - at:
+      harts: 8
+      spinlock: false
+    um2: 742.28
+  - at:
+      harts: 1
+      spinlock: true
+    um2: 650.16
+  - at:
+      harts: 2
+      spinlock: true
+    um2: 611.52
+  - at:
+      harts: 4
+      spinlock: true
+    um2: 710.92
+  - at:
+      harts: 8
+      spinlock: true
+    um2: 742.28
+  corner:
+    tool: ecc
+    pdk: ics55
+    freq_mhz: 100
+    measured: '2026-09-08'
+    gen_digest: sha256:47162ec572054eea
