@@ -8,7 +8,7 @@ regs:
     offset: 0x000
     desc: ring a doorbell, one per hart
     array: { count: harts, stride: 4 }
-    fields: [ { name: val, bits: "0:0", sw: w, hw: r, swmod: true } ]
+    fields: [ { name: val, bits: "0:0", sw: w, hw: rw, reset: 0 } ]
   - name: dstat
     offset: 0x100
     desc: doorbell pending, write one to clear
@@ -19,4 +19,4 @@ regs:
     desc: hardware spinlock, read acquires
     feature: spinlock
     array: { count: locks, stride: 4 }
-    fields: [ { name: val, bits: "0:0", sw: rw, hw: rw, volatile: true, swacc: true } ]
+    fields: [ { name: val, bits: "0:0", sw: rw, hw: r, onread: rset, reset: 0 } ]

@@ -1,6 +1,6 @@
 name: mbox
 version: 0.1.0
-spec: "0.1"
+spec: '0.1'
 kind: ip
 lang: bsv
 identity:
@@ -8,23 +8,48 @@ identity:
   display_name: Inter-core mailbox
   summary: Doorbell interrupts and hardware spinlocks.
   category: peripheral
-  subcategories: [mailbox]
+  subcategories:
+  - mailbox
   ip_family: mbox
-  integration_profile: [apb4-slave]
+  integration_profile:
+  - apb4-slave
   maturity: planned
 contract:
   version: 1
-  ctrl: { shape: flat, aw: 12, dw: 32 }
-  irq: [ { name: irq, kind: level } ]
+  ctrl:
+    shape: flat
+    aw: 12
+    dw: 32
+  irq:
+  - name: irqs
+    kind: level
+    width: harts
 params:
-  harts: { type: int, default: 2, range: [1, 8] }
-  locks: { type: int, default: 32, range: [1, 128] }
+  harts:
+    type: int
+    default: 2
+    range:
+    - 1
+    - 8
+  locks:
+    type: int
+    default: 32
+    range:
+    - 1
+    - 128
 features:
-  spinlock: { type: bool, default: true }
+  spinlock:
+    type: bool
+    default: true
 emit:
-  - kind: bsv
-    package: Mbox
-    module: mkMbox
-    config_type: MboxCfg
-    interface: MboxIfc
-deps: { hwcore: "^0.1" }
+- kind: bsv
+  package: Mbox
+  module: mkMbox
+  config_type: MboxCfg
+  interface: MboxIfc
+  ctrl: regs
+- kind: verilog-flat
+  bus: apb4
+deps:
+  hwcore: ^0.1
+  amba: ^0.1
