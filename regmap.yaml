@@ -19,4 +19,5 @@ regs:
     desc: hardware spinlock, read acquires
     feature: spinlock
     array: { count: locks, stride: 4 }
-    fields: [ { name: val, bits: "0:0", sw: rw, hw: r, onread: rset, reset: 0 } ]
+    # 硬件不看锁的状态：取锁与放锁全在寄存器组里完成，读即取、写即放。
+    fields: [ { name: val, bits: "0:0", sw: rw, hw: na, onread: rset, reset: 0 } ]

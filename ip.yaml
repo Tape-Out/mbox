@@ -80,38 +80,69 @@ area:
   - at:
       harts: 1
       spinlock: false
+      locks: 32
     um2: 124.32
   - at:
       harts: 2
       spinlock: false
+      locks: 32
     um2: 145.6
   - at:
       harts: 4
       spinlock: false
+      locks: 32
     um2: 180.04
   - at:
       harts: 8
       spinlock: false
+      locks: 32
     um2: 238.84
   - at:
       harts: 1
       spinlock: true
+      locks: 32
     um2: 618.52
   - at:
       harts: 2
       spinlock: true
+      locks: 32
     um2: 632.24
   - at:
       harts: 4
       spinlock: true
+      locks: 32
     um2: 664.16
   - at:
       harts: 8
       spinlock: true
+      locks: 32
     um2: 738.92
+  - at:
+      harts: 2
+      locks: 1
+      spinlock: true
+    um2: 151.2
+  - at:
+      harts: 2
+      locks: 8
+      spinlock: true
+    um2: 284.2
+  - at:
+      harts: 2
+      locks: 128
+      spinlock: true
+    um2: 2005.36
   corner:
     tool: ecc
     pdk: ics55
     freq_mhz: 100
     measured: '2026-09-09'
-    gen_digest: sha256:e12e73ae946c29c3
+    gen_digest: sha256:b9e4ffb02083709b
+  params:
+    locks:
+      points:
+        '1': -481.04
+        '8': -348.04
+        '32': 0.0
+        '128': 1373.12
+      when: spinlock
