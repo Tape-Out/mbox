@@ -43,10 +43,10 @@ features:
     default: true
     area:
       points:
-        '1': 494.2
-        '2': 486.64
-        '4': 484.12
-        '8': 500.08
+        '1': 495.04
+        '2': 450.52
+        '4': 462.56
+        '8': 475.16
       per: harts
 emit:
 - kind: bsv
@@ -63,86 +63,86 @@ deps:
 area:
   base:
     points:
-      '1': 124.32
-      '2': 145.6
-      '4': 180.04
-      '8': 238.84
+      '1': 127.96
+      '2': 145.32
+      '4': 182.28
+      '8': 261.8
     per: harts
   margin: 0.0211
   model: points-additive
   error:
     bound: 0.05
     sign: over
-    note: parameter curves stored as measured points, features added on top, then
-      lifted by 0.0211 so that no untested combination predicts under; the worst came
-      in 1.61 percent under before the lift
+    note: parameter curves stored as measured points, features added on top, 
+      then lifted by 0.0211 so that no untested combination predicts under; the 
+      worst came in 1.61 percent under before the lift
   measured:
   - at:
       harts: 1
       spinlock: false
       locks: 32
-    um2: 124.32
+    um2: 127.96
   - at:
       harts: 2
       spinlock: false
       locks: 32
-    um2: 145.6
+    um2: 145.32
   - at:
       harts: 4
       spinlock: false
       locks: 32
-    um2: 180.04
+    um2: 182.28
   - at:
       harts: 8
       spinlock: false
       locks: 32
-    um2: 238.84
+    um2: 261.8
   - at:
       harts: 1
       spinlock: true
       locks: 32
-    um2: 618.52
+    um2: 623.0
   - at:
       harts: 2
       spinlock: true
       locks: 32
-    um2: 632.24
+    um2: 595.84
   - at:
       harts: 4
       spinlock: true
       locks: 32
-    um2: 664.16
+    um2: 644.84
   - at:
       harts: 8
       spinlock: true
       locks: 32
-    um2: 738.92
+    um2: 736.96
   - at:
       harts: 2
       locks: 1
       spinlock: true
-    um2: 151.2
+    um2: 173.04
   - at:
       harts: 2
       locks: 8
       spinlock: true
-    um2: 284.2
+    um2: 285.88
   - at:
       harts: 2
       locks: 128
       spinlock: true
-    um2: 2005.36
+    um2: 2014.04
   corner:
     tool: ecc
     pdk: ics55
     freq_mhz: 100
-    measured: '2026-09-09'
-    gen_digest: sha256:b9e4ffb02083709b
+    measured: '2026-09-10'
+    gen_digest: sha256:45fb7d6d9e761c8d
   params:
     locks:
       points:
-        '1': -481.04
-        '8': -348.04
+        '1': -422.8
+        '8': -309.96
         '32': 0.0
-        '128': 1373.12
+        '128': 1418.2
       when: spinlock
