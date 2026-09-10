@@ -43,6 +43,63 @@ other = "" if locks < 2 else NL.join([
 ])
 after_lock2 = "Other" if locks >= 2 else "Release"
 
+door1 = (f'''
+  // 敲 1 号核的门铃：状态位该落在**第 1 位**上，而且不许把 0 号的那一位带起来。
+  // 门铃是每核一个寄存器、状态是一个共用的位图，两者的下标必须对得上——
+  // 位图与数组下标错位是最容易静默发生的一类错。
+  rule door1 (ph == Door1);
+    if (n == 0) wr(rDOOR0 + 4, 32'h1);
+    if (n > 8) begin ph <= Door1Chk; n <= 0; end
+    else n <= n + 1;
+  endrule
+
+  rule door1Chk (ph == Door1Chk);
+    let x <- m.regs.access(RegReq {{ addr: rDSTAT, write: False,
+                                    wdata: 0, wstrb: 4'hF }});
+    Bool wrong = False;
+    if (x.rdata[1] == 0) begin
+      $display("FAIL ringing hart 1 left status bit 1 clear: %08h", x.rdata);
+      wrong = True;
+    end
+    if (x.rdata[0] == 1) begin
+      $display("FAIL ringing hart 1 also raised hart 0: %08h", x.rdata);
+      wrong = True;
+    end
+    if (wrong) bad <= True;
+    ph <= Door1Clr;
+  endrule
+
+  // 写一清零要按位来：清第 1 位不该动别的
+  rule door1Clr (ph == Door1Clr);
+    wr(rDSTAT, 32'h2);
+    ph <= Door1End;
+    n  <= 0;
+  endrule
+
+  rule door1End (ph == Door1End);
+    if (n > 4) begin
+      ph <= Lock1;
+      n  <= 0;
+    end else n <= n + 1;
+  endrule
+''' if harts >= 2 else f'''
+  rule door1 (ph == Door1);
+    ph <= Lock1;                 // 只有一个核，没有第二个门铃
+  endrule
+
+  rule door1Chk (ph == Door1Chk);
+    ph <= Lock1;
+  endrule
+
+  rule door1Clr (ph == Door1Clr);
+    ph <= Lock1;
+  endrule
+
+  rule door1End (ph == Door1End);
+    ph <= Lock1;
+  endrule
+''')
+
 txt = f'''package Mbox{label}Tb;
 
 import RegIf::*;
@@ -56,7 +113,9 @@ Bit#(12) rDSTAT = 12'h100;
 Bit#(12) rLOCK0 = 12'h200;
 Bit#(12) rLOCK1 = 12'h204;
 
-typedef enum {{ Ring, Pend, ClearD, Lock1, Lock2, Other, Release, Relock, Done }}
+typedef enum {{ Ring, Pend, ClearD, Zero, ZeroChk,
+               Door1, Door1Chk, Door1Clr, Door1End,
+               Lock1, Lock2, Other, Release, Relock, Done }}
   Phase deriving (Bits, Eq);
 
 (* synthesize *)
@@ -66,6 +125,7 @@ module mkMbox{label}Tb(Empty);
   Reg#(Phase)    ph  <- mkReg(Ring);
   Reg#(Bit#(32)) cyc <- mkReg(0);
   Reg#(Bool)     bad <- mkReg(False);
+  Reg#(Bit#(8))  n   <- mkReg(0);   // 这几段自己的步数，别跟别处抢
   Reg#(Bool)     sawIrq <- mkReg(False);
 
   rule watch;
@@ -98,8 +158,29 @@ module mkMbox{label}Tb(Empty);
 
   rule clearD (ph == ClearD);
     wr(rDSTAT, 32'h1);         // 写一清零
-    ph <= Lock1;
+    ph <= Zero;
+    n  <= 0;
   endrule
+
+  // 往门铃里写 0 不是敲门。门铃是「写 1 送一下」，写 0 该什么也不发生——
+  // 不问这一句的话，任何一次写门铃寄存器都会算成敲了一下。
+  rule zero_ (ph == Zero);
+    if (n == 0) wr(rDOOR0, 32'h0);
+    if (n > 8) begin ph <= ZeroChk; n <= 0; end
+    else n <= n + 1;
+  endrule
+
+  rule zeroChk (ph == ZeroChk);
+    let x <- m.regs.access(RegReq {{ addr: rDSTAT, write: False,
+                                    wdata: 0, wstrb: 4'hF }});
+    if (x.rdata[0] == 1) begin
+      $display("FAIL writing zero to a doorbell rang it anyway: %08h", x.rdata);
+      bad <= True;
+    end
+    ph <= Door1;
+    n  <= 0;
+  endrule
+{door1}
 
   // 第一次读锁：没人占，该拿到 0
   rule lock1 (ph == Lock1);
@@ -152,7 +233,7 @@ module mkMbox{label}Tb(Empty);
       bad <= True;
     end
     if (bad || !sawIrq) $display("FAILED");
-    else $display("PASS mbox: doorbell, and the lock is taken by the read itself");
+    else $display("PASS mbox: doorbells land on their own status bits, writing zero rings nothing, and the lock is taken by the read itself");
     $finish((bad || !sawIrq) ? 1 : 0);
   endrule
 endmodule
