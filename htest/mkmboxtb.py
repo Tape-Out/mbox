@@ -105,7 +105,7 @@ txt = f'''package Mbox{label}Tb;
 import RegIf::*;
 import Mbox::*;
 
-// 由 tb/mkmboxtb.py 生成，勿手改。
+// 由 htest/mkmboxtb.py 生成，勿手改。
 // 这一点：harts={harts} locks={locks} spinlock={spin}
 
 Bit#(12) rDOOR0 = 12'h000;
